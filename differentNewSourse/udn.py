@@ -14,6 +14,7 @@ def get_news_links(url): # 從搜尋頁面抓結果
                 title = news.find('h2').text.strip()
                 link = news.find('a')['href']
                 time = news.find('time').text[:10]
+                time=time[0:4]+'/'+time[5:7]+'/'+time[8:10]
                 category = news.find('a', class_='story-list__cate').text.strip()
                 news_links.append((title, link, category,time))
             else:

@@ -17,7 +17,7 @@ if __name__ == "__main__":
     df = pd.concat([df, pd.DataFrame(yahoo.get_news(), columns=["Title",  "Content","Time","Resourse"])], ignore_index=True)
     df = pd.concat([df, pd.DataFrame(mirror.get_news(), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
     df = pd.concat([df, pd.DataFrame(pts.get_news(), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
-
+    df = pd.concat([df, pd.DataFrame(ttv.get_news(), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
     
     # 存成excel
     try:
