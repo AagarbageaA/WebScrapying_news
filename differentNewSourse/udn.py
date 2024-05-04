@@ -24,13 +24,13 @@ def get_news_links(url): # 從搜尋頁面抓結果
         print("Failed to retrieve the page.")
         return []
 
-def get_news_content(news_link): # 抓一篇新聞的內容跟hashtag
+def get_news_content(news_link): 
     response = requests.get(news_link)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        if news_link.find("ubrand")!=-1:
-            article_content = soup.find('div', class_='story_body_content').find_all('p',class_='', recursive=False)
-            content=''
+        if news_link.find("ubrand") != -1:
+            article_content = soup.find('div', class_='story_body_content').find_all('p', class_='', recursive=False)
+            content = ''
             for article in article_content:
                 content += article.get_text(strip=True) + '\n'
             keywords = [tag.text.strip() for tag in soup.find('div', {'id': 'tags'}).find_all('a')]
@@ -56,8 +56,9 @@ def get_news():
             "Title": title,
             "Category": category,
             "Content": content,
-            "Keywords": ", ".join(keywords),
-            'Time':time,
-            "Resourse":"udn"
+            "Keywords": keywords,  # 返回关键词列表
+            'Time': time,
+            "Resourse": "udn"
         })
     return news_data
+get_news()
