@@ -14,7 +14,8 @@ def get_news_links(url): # 從搜尋頁面抓結果
             title = news.find('h3').text.strip()
             link = news.find('a',class_='tit')['href']
             category = news.find('a', class_='immtag').text.strip()
-            news_links.append((title, link, category))
+            time=news.find('span',class_='time').text[:10]
+            news_links.append((title, link, category,time))
         return news_links
     else:
         print("Failed to retrieve the page.")
@@ -24,7 +25,10 @@ def get_news_content(news_link):
     response = requests.get(news_link)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        content_divs = soup.find_all('div', class_='text boxTitle boxText')
+        if news_link.find('business')!=-1:
+            content_divs = soup.find_all('div', class_='text')
+        else:
+            content_divs = soup.find_all('div', class_='text boxTitle boxText')
         content = ''
         for div in content_divs:
             paragraphs = div.find_all('p',class_='', recursive=False) #recursive=False�i�H���n����Ldiv���U����r
@@ -42,14 +46,15 @@ def get_news():
     url = "https://news.ltn.com.tw/topic/%E5%9C%B0%E5%B1%A4%E4%B8%8B%E9%99%B7"
     news_links = get_news_links(url)
     news_data = []
-    for title, link, category in news_links:
+    for title, link, category,time in news_links:
         sleep(1)
         content= get_news_content(link)
         news_data.append({
             "Title":title,
             "Category":category,
             "Content":content,
+            "Time":time,
             "Resourse":"ltn"
         })
     return news_data
-
+get_news()

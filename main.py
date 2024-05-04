@@ -8,15 +8,16 @@ import differentNewSourse.ttv as ttv
 import pandas as pd
 
 if __name__ == "__main__":
-    df = pd.DataFrame(columns=["Title", "Category", "Content", "Keywords","Resourse"])
+    df = pd.DataFrame(columns=["Title", "Category", "Content", "Keywords","Time","Resourse"])
     
     # 把每個網站爬到的資料存進df
-    # df = pd.concat([df, pd.DataFrame(ltn.get_news(), columns=["Title", "Category", "Content", "Resourse"])], ignore_index=True)
-    # df = pd.concat([df, pd.DataFrame(udn.get_news(), columns=["Title", "Category", "Content", "Keywords", "Resourse"])], ignore_index=True)
-    # df = pd.concat([df, pd.DataFrame(yahoo.get_news(), columns=["Title", "Content", "Resourse"])], ignore_index=True)
-    # df = pd.concat([df, pd.DataFrame(mirror.get_news(), columns=["Title", "Content", "Keywords", "Resourse"])], ignore_index=True)
-    # df = pd.concat([df, pd.DataFrame(pts.get_news(), columns=["Title", "Content", "Keywords", "Resourse"])], ignore_index=True)
-    df = pd.concat([df, pd.DataFrame(ttv.get_news(), columns=["Title", "Content", "Keywords", "Time", "Resourse"])], ignore_index=True)
+
+    df = pd.concat([df, pd.DataFrame(ltn.get_news(), columns=["Title", "Category", "Content","Time","Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(udn.get_news(), columns=["Title",  "Category", "Content", "Keywords","Time","Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(yahoo.get_news(), columns=["Title",  "Content","Time","Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(mirror.get_news(), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(pts.get_news(), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
+
     
     # 存成excel
     try:

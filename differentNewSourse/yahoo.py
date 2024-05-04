@@ -1,8 +1,16 @@
 # Yahoo新聞
+from datetime import datetime
 from time import sleep
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
+
+def convert_date(date_str):
+    date_str = date_str.strip()
+    # 把string轉成datetime格式
+    date_object = datetime.strptime(date_str, "%Y年%m月%d日")
+    formatted_date = date_object.strftime("%Y/%m/%d")
+    return formatted_date
 
 def get_news_links(url): # 從搜尋頁面抓結果
     response = requests.get(url)
@@ -24,13 +32,15 @@ def get_news_content(news_link):
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         content_divs = soup.find_all('div', class_='caas-body')
+        time=soup.find('time').text[:10]
+        time=convert_date(time)
         content = ''
         for div in content_divs:
             paragraphs = div.find_all('p',class_='', recursive=False) #recursive=False可以不要找到其他div底下的文字
             for p in paragraphs:
                 if not p.find_all(): # 判斷在指定的 <p> 標籤內是否有其他子標籤
                     content += p.text + '\n'
-        return content.strip()
+        return content.strip(),time
     else:
         print(f"Failed to retrieve the content from {news_link}.")
         return "", []
@@ -41,10 +51,11 @@ def get_news():
     news_data = []
     for title, link in news_links:
         sleep(1)
-        content= get_news_content(link)
+        content,time= get_news_content(link)
         news_data.append({
             "Title": title,
             "Content": content,
+            "Time": time,
             "Resourse":"yahoo"
         })
     return news_data
