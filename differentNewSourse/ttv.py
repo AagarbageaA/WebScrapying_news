@@ -35,21 +35,26 @@ def fetch_content(url):
             data = response.read().decode("utf-8")
 
         soup = BeautifulSoup(data, "html.parser")
-
+        # Title
         title = soup.find("h1", class_="mb-ht-hf").text.strip()
-
-        date = soup.find("li", class_="date time").text.strip()
-        date_temp = date.split(" ")[0].split(".")
-        date = f"{date_temp[0]}/{date_temp[1]}/{date_temp[2]}"
-
-        tags = soup.find("div", class_="news-article fitVids").find("ul", class_="tag").findAll("a")
-        tags = list(map(lambda x: x.text.strip(), tags))
-
+        # content
         contents = soup.find("div", id="newscontent").findAll("p")
         content = ""
         for i, c in enumerate(contents): 
             if i!=len(contents)-1: content += c.text.strip()
-        return {"Title": title, "Content": content, "Keywords": tags, "Time": date, "Resourse":"ttv"}
+        # tags
+        tags = soup.find("div", class_="news-article fitVids").find("ul", class_="tag").findAll("a")
+        tags = list(map(lambda x: x.text.strip(), tags))
+        # Time
+        date = soup.find("li", class_="date time").text.strip()
+        date_temp = date.split(" ")[0].split(".")
+        date = f"{date_temp[0]}/{date_temp[1]}/{date_temp[2]}"
+
+        return {"Title": title, 
+                "Content": content, 
+                "Keywords": tags, 
+                "Time": date, 
+                "Resourse":"ttv"}
     
     except:
         return
@@ -69,4 +74,4 @@ def get_news():
     return news_data
 
 if __name__ == "__main__":
-    get_news()
+    print(get_news())

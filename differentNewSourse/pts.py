@@ -35,6 +35,7 @@ def fetch_content(url):
             data = response.read().decode("utf-8")
         
         soup = BeautifulSoup(data, "html.parser")
+
         # title
         title = soup.find("h1", class_="article-title").text.strip()
 
@@ -49,10 +50,18 @@ def fetch_content(url):
         tags += soup.find("div", class_="position-relative article-like-area").findAll("li", class_="blue-tag hide-tag hashList")
         for i, tag in enumerate(tags):
             tags[i] = tag.text.strip()
+        # time
+        date = soup.find("span", class_="text-nowrap mr-2").find("time").text.strip()
+        date_temp = date.split(" ")[0].split("-")
+        date = f"{date_temp[0]}/{date_temp[1]}/{date_temp[2]}"
 
         # write_file(title, pos_title, article_contents, tag_list, route)
 
-        return {"Title": title, "Content": overview, "Keywords": tags,"Resourse":"pts"}
+        return {"Title": title, 
+                "Content": overview, 
+                "Keywords": tags,
+                "Time": date,
+                "Resourse":"pts"}
 
 
     except:
@@ -89,3 +98,5 @@ def get_news():
         time.sleep(1)
     return news_data
     
+if __name__ == "__main__":
+    print(get_news())
