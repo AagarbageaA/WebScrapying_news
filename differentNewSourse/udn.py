@@ -2,27 +2,47 @@
 from time import sleep
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
 def get_news_links(url): # 從搜尋頁面抓結果
-    response = requests.get(url)
-    if response.status_code == 200: #響應成功
-        soup = BeautifulSoup(response.text, 'html.parser') #解析text
-        news_list = soup.find_all('div', class_='story-list__text') #這裡放list的標頭
-        news_links = []
-        for news in news_list:  # 要抓幾條新聞
-            if news.find('h2')!=None:
-                title = news.find('h2').text.strip()
-                link = news.find('a')['href']
-                time = news.find('time').text[:10]
-                time=time[0:4]+'/'+time[5:7]+'/'+time[8:10]
-                category = news.find('a', class_='story-list__cate').text.strip()
-                news_links.append((title, link, category,time))
-            else:
+    driver = webdriver.Chrome() 
+    driver.get(url)
+    sleep(5)  # 等頁面載入完全
+
+    # 模擬滾動 觸發動態載入 直到需要的年份都出現
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        sleep(3)  # 等待
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
+        
+        # 檢查最後一篇新聞的時間，並停止動態載入
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        last_news_year = soup.find('div', class_='story-list__news').find("time").text[:4]
+        if int(last_news_year) < 2022:
+            break
+
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    news_list = soup.find_all('div', class_='story-list__news') #這裡放list的標頭
+    news_links = []
+    for news in news_list:  # 要抓幾條新聞
+        if news.find('h2')!=None:
+            title = news.find('h2').text.strip()
+            link = news.find('a')['href']
+            time = news.find('time').text[:10]
+            if int(time[0:4])<2022:
                 break
-        return news_links
-    else:
-        print("Failed to retrieve the page.")
-        return []
+            time=time[0:4]+'/'+time[5:7]+'/'+time[8:10]
+            category = news.find('a', class_='story-list__cate').text.strip()
+            news_links.append((title, link, category,time))
+        else:
+            break
+    return news_links
+
 
 def get_news_content(news_link): 
     response = requests.get(news_link)
@@ -50,15 +70,14 @@ def get_news():
     news_links = get_news_links(url)
     news_data = []
     for title, link, category, time in news_links:
-        sleep(1)
+        sleep(0.2)
         content, keywords = get_news_content(link)
         news_data.append({
             "Title": title,
             "Category": category,
             "Content": content,
-            "Keywords": keywords,  # 返回关键词列表
+            "Keywords": keywords,  
             'Time': time,
             "Resourse": "udn"
         })
     return news_data
-get_news()

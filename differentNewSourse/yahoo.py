@@ -50,7 +50,7 @@ def get_news():
     news_links = get_news_links(url)
     news_data = []
     for title, link in news_links:
-        sleep(1)
+        sleep(0.2)
         content,time= get_news_content(link)
         news_data.append({
             "Title": title,
