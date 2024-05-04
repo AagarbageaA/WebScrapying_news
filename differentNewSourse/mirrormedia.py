@@ -50,9 +50,17 @@ def fetch_content(url):
         tags = soup.find("section", class_="tags__TagsWrapper-sc-d99abf99-0 fKrSHt article-info__StyledTags-sc-a05ad886-4 fhVRaZ").findAll("a")
         for i, tag in enumerate(tags):
             tags[i] = tag.text.strip()
+        # time
+        date = soup.find("div", class_="normal__Date-sc-feea3c7c-5 lCa-Da").text.strip()
+        date_temp = date.split(" ")[0].split(".")
+        date = f"{date_temp[0]}/{date_temp[1]}/{date_temp[2]}"
 
 
-        return {"Title": title, "Content": content, "Keywords": tags,"Resourse":"mirrormedia"}
+        return {"Title": title, 
+                "Content": content, 
+                "Keywords": tags,
+                "Time": date,
+                "Resourse":"mirrormedia"}
     except:
 
         return
@@ -71,3 +79,6 @@ def get_news():
         news_data.append(data)
         time.sleep(1)
     return news_data
+
+if __name__ == "__main__":
+    print(get_news())
