@@ -59,4 +59,3 @@ def get_news():
             "Resourse":"yahoo"
         })
     return news_data
-    
