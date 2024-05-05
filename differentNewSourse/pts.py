@@ -66,7 +66,6 @@ def fetch_content(url):
 
         # title
         title = soup.find("h1", class_="article-title").text.strip()
-        print(title)
 
         # content
         overview = soup.find("div", class_="articleimg").text.strip()

@@ -65,7 +65,6 @@ def fetch_content(url):
             title = soup.find("h1", class_="normal__Title-sc-feea3c7c-0 dreoUD").text.strip()
         except:
             return
-        print(title)
         # content
         contents = soup.findAll("span", {"data-text":"true"})
         content = ""
