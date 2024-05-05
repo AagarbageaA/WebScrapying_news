@@ -2,25 +2,25 @@ from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-def get_news_links(url): 
+def get_news_links(url,boundary): 
     driver = webdriver.Chrome() 
     driver.get(url)
-    sleep(3)  # 等頁面載入完全
+    sleep(5)  # 等頁面載入完全
 
     # 模擬滾動 觸發動態載入 直到需要的年份都出現
     last_height = driver.execute_script("return document.body.scrollHeight")
     while True:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        sleep(1)  # 等待
+        sleep(3)  # 等待
         new_height = driver.execute_script("return document.body.scrollHeight")
         if new_height == last_height:
             break
         last_height = new_height
-        
         # 檢查最後一篇新聞的時間，並停止動態載入
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        last_news_year = soup.find('ul', class_='searchlist').find_all('li')[-1].find('span', class_='time').text[:4]
-        if int(last_news_year) < 2022:
+        last_news_date = soup.find('ul', class_='searchlist').find_all('li')[-1].find('span', class_='time').text[:10]
+        
+        if int("".join(last_news_date.split("/")))<boundary:
             break
 
     # 抓每則新聞
@@ -34,7 +34,7 @@ def get_news_links(url):
             link = "https://news.ltn.com.tw/" + link
         category = news.find('a', class_='immtag').text.strip()
         time = news.find('span', class_='time').text[:10]
-        if int(time[:4]) < 2022:
+        if int("".join(time.split("/"))) < boundary:
             break
         news_links.append((title, link, category, time))
 
@@ -56,9 +56,9 @@ def get_news_content(news_link):
                 content += p.get_text(strip=True) + '\n'
         return content.strip()
 
-def get_news():
-    url = "https://news.ltn.com.tw/topic/%E5%9C%B0%E5%B1%A4%E4%B8%8B%E9%99%B7"
-    news_links = get_news_links(url)
+def get_news(boundary):
+    url = "https://news.ltn.com.tw/topic/地層下陷"
+    news_links = get_news_links(url,boundary)
     news_data = []
     for title, link, category, time in news_links:
         sleep(0.2)
@@ -71,4 +71,5 @@ def get_news():
             "Resourse": "ltn"
         })
     return news_data
+
 

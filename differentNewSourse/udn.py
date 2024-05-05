@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-def get_news_links(url): # 從搜尋頁面抓結果
+def get_news_links(url,boundary): # 從搜尋頁面抓結果
     driver = webdriver.Chrome() 
     driver.get(url)
     sleep(5)  # 等頁面載入完全
@@ -21,8 +21,8 @@ def get_news_links(url): # 從搜尋頁面抓結果
         
         # 檢查最後一篇新聞的時間，並停止動態載入
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        last_news_year = soup.find('div', class_='story-list__news').find("time").text[:4]
-        if int(last_news_year) < 2022:
+        last_news_date = soup.find('div', class_='story-list__news').find("time").text[:10]
+        if int("".join(last_news_date.split("-"))) < boundary:
             break
 
 
@@ -34,7 +34,7 @@ def get_news_links(url): # 從搜尋頁面抓結果
             title = news.find('h2').text.strip()
             link = news.find('a')['href']
             time = news.find('time').text[:10]
-            if int(time[0:4])<2022:
+            if int("".join(time.split("-")))<boundary:
                 break
             time=time[0:4]+'/'+time[5:7]+'/'+time[8:10]
             category = news.find('a', class_='story-list__cate').text.strip()
@@ -65,9 +65,9 @@ def get_news_content(news_link):
         print(f"Failed to retrieve the content from {news_link}.")
     return "", []
 
-def get_news():
+def get_news(boundary):
     url = "https://udn.com/search/tagging/2/地層下陷"
-    news_links = get_news_links(url)
+    news_links = get_news_links(url,boundary)
     news_data = []
     for title, link, category, time in news_links:
         sleep(0.2)

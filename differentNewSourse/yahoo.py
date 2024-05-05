@@ -12,17 +12,25 @@ def convert_date(date_str):
     formatted_date = date_object.strftime("%Y/%m/%d")
     return formatted_date
 
-def get_news_links(url): # 從搜尋頁面抓結果
+def get_news_data(url,boundary): # 從搜尋頁面抓結果
     response = requests.get(url)
     if response.status_code == 200: #響應成功
         soup = BeautifulSoup(response.text, 'html.parser') #解析text
         news_list = soup.find('div', {'id': 'mrt-node-Col1-1-StreamContainer'}).find_all('li', {'class': 'StreamMegaItem'}) #這裡放list的標頭
-        news_links = []
+        news_data = []
         for news in news_list:  # 要抓幾條新聞
             title = news.find('a').text
             link = urljoin(url, news.find('a')['href'])
-            news_links.append((title, link))
-        return news_links
+            content,time= get_news_content(link)
+            if int("".join(time.split("/")))<boundary:
+                continue
+            news_data.append({
+                "Title": title,
+                "Content": content,
+                "Time": time,
+                "Resourse":"yahoo"
+            })
+        return news_data
     else:
         print("Failed to retrieve the page.")
         return []
@@ -45,17 +53,7 @@ def get_news_content(news_link):
         print(f"Failed to retrieve the content from {news_link}.")
         return "", []
 
-def get_news():
+def get_news(boundary):
     url = "https://tw.news.yahoo.com/search?p=地層下陷&fr=uh3_news_web&fr2=p%3Anews%2Cm%3Asb%2Cv%3Aartcl&.tsrc=uh3_news_web&guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAHx8l7uBQ1xboD3afpSrtg6IpsxNAQ3ebXwG_iNpPjXftRWknF5tecJVy1j1jM_GiL10k_0gQmtVQ7oI5XEdYAauO2xwAkLC63RwCvRaOyQAqGR5zR2nhgPRseaywFSPrHREOGFbSV4_5gZW1w-IZLhHWir5kIt7ZCCAC1OtPqVZ"
-    news_links = get_news_links(url)
-    news_data = []
-    for title, link in news_links:
-        sleep(0.2)
-        content,time= get_news_content(link)
-        news_data.append({
-            "Title": title,
-            "Content": content,
-            "Time": time,
-            "Resourse":"yahoo"
-        })
+    news_data = get_news_data(url,boundary)
     return news_data
