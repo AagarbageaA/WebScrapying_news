@@ -1,29 +1,53 @@
-#��P�Z
-import time
-
+# mirrormedia鏡周刊
 import urllib.request as request
 
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
+from selenium import webdriver
+from time import sleep
 
-def fetch_links(url):
-    fake_header_can = UserAgent().random
-    fake_header = {'user-agent': fake_header_can}
+def later_than(current, boundary):
+    if int(current) > int(boundary): return True
+    return False
+
+def fetch_links(url, boundary):
+    driver = webdriver.Chrome() 
+    driver.get(url)
+    sleep(2)  # 等頁面載入完全
+
+    # 模擬滾動 觸發動態載入 直到需要的年份都出現
+    last_height = driver.execute_script("return document.body.scrollHeight")
     try:
-        requests = request.Request(url, headers=fake_header) # 用 fake header 去 request 網頁 html
-        with request.urlopen(requests) as response:
-            data = response.read().decode("utf-8")
+        while True:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            sleep(2)  # 等待
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
 
-        # fetch the link
-        soup = BeautifulSoup(data, "html.parser")
-
-        link_list = soup.find("div", class_="article-list__ItemContainer-sc-4a6f6218-0 dZwMjE").findAll("a")
-        for i, link in enumerate(link_list): 
-            link_list[i] = "https://www.mirrormedia.mg" + link['href']
-        return link_list
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            last_news_year = soup.find("main", class_="slug-__TagContainer-sc-6af2655a-0 hzPAes").find_all("a")[-1]["href"][7:11]
+            if int(last_news_year) < 2022: break
         
-    except:
+        # fetch the link
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        link_list = []
+        links_list = soup.find("main", class_="slug-__TagContainer-sc-6af2655a-0 hzPAes").find_all("div", class_="article-list__ItemContainer-sc-4a6f6218-0 dZwMjE")
+        
+        for links in links_list: 
+            links_ = links.findAll("a", recursive=True)
+            for link in links_:
+                if link["href"][0:4]=="http" or later_than(link["href"][7:15], boundary) == False: continue # skip advertise news
+                link_list.append("https://www.mirrormedia.mg" + link['href'])
+
+        return link_list
+    
+    except Exception as e:
+        print(f"{e} while fetching links")
         return
+        
+
 
 def fetch_content(url):
     fake_header_can = UserAgent().random
@@ -41,6 +65,7 @@ def fetch_content(url):
             title = soup.find("h1", class_="normal__Title-sc-feea3c7c-0 dreoUD").text.strip()
         except:
             return
+        print(title)
         # content
         contents = soup.findAll("span", {"data-text":"true"})
         content = ""
@@ -61,24 +86,24 @@ def fetch_content(url):
                 "Keywords": tags,
                 "Time": date,
                 "Resourse":"mirrormedia"}
-    except:
-
+    except Exception as e:
+        print(f"{e} while fetching content")
         return
 
 
 
-def get_news():
+def get_news(boundary):
     # fetch all the article link in the serach page
     url = "https://www.mirrormedia.mg/tag/597ec945e531830d00e334e9"
-    link_list = fetch_links(url)
+    link_list = fetch_links(url, boundary)
 
     news_data = []
     for link in link_list:
         data = fetch_content(link)
         if data == None: continue
         news_data.append(data)
-        time.sleep(1)
+        sleep(1)
     return news_data
 
 if __name__ == "__main__":
-    print(get_news())
+    get_news("20220101")
