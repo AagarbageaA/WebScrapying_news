@@ -1,29 +1,48 @@
-#��P�Z
-import time
+#ttv台視
+import string
 
 import urllib.request as request
 import urllib.parse as parse
 
 from bs4 import BeautifulSoup
+from time import sleep
 from fake_useragent import UserAgent
 
-def fetch_links(url):
+def later_than(current, boundary):
+    current = int("".join(current.split("/")))
+    if current > int(boundary): return True
+    return False
+
+def fetch_links(url, boundary):
     fake_header_can = UserAgent().random
     fake_header = {'user-agent': fake_header_can}
     try:
-        requests = request.Request(url, headers=fake_header)
-        with request.urlopen(requests) as response:
-            data = response.read().decode("utf-8")
+        link_list = []
+        while(True):
+            requests = request.Request(url, headers=fake_header)
+            with request.urlopen(requests) as response:
+                data = response.read().decode("utf-8")
 
-        soup = BeautifulSoup(data, "html.parser")
+            soup = BeautifulSoup(data, "html.parser")
 
-        data_list = soup.findAll("a", class_="clearfix")
+            data_list = soup.findAll("a", class_="clearfix")
 
-        link_list = list(map(lambda x: "https://news.ttv.com.tw" + x['href'], data_list))
-
+            for d in data_list:
+                date = d.find("div", class_="time").text.strip()[0:10]
+                if later_than(date, boundary) == False: break
+                link_list.append("https://news.ttv.com.tw" + d['href'])
+            else:
+                # click to next page
+                next_page = soup.find("ul", class_="pagination").find_all("li")[-1]
+                if next_page["class"] == "page-item disabled": break
+                url = "https://news.ttv.com.tw" + soup.find("ul", class_="pagination").find_all("li")[-1].find("a")["href"]
+                url = parse.quote(url, safe=string.printable)
+                continue
+            break
         return link_list
-    except:
-        return
+    except Exception as e:
+        print(f"{e} while fetching links")
+        return link_list
 
 def fetch_content(url):
     fake_header_can = UserAgent().random
@@ -56,22 +75,23 @@ def fetch_content(url):
                 "Time": date, 
                 "Resourse":"ttv"}
     
-    except:
+    except Exception as e:
+        print(f"{e} while fetching content of {url}")
         return
 
 
-def get_news():
+def get_news(boundary):
     # fetch all the article link in the serach page
     url = "https://news.ttv.com.tw/search/" + parse.quote("地層下陷")
-    link_list = fetch_links(url)
+    link_list = fetch_links(url, boundary)
 
     news_data = []
     for link in link_list:
         data = fetch_content(link)
         if data == None: continue
         news_data.append(data)
-        time.sleep(1)
+        sleep(1)
     return news_data
 
 if __name__ == "__main__":
-    print(get_news())
+    get_news("20220101")

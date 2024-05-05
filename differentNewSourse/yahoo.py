@@ -1,8 +1,10 @@
 # Yahoo新聞
+
+import requests
+
 from datetime import datetime
 from time import sleep
 from urllib.parse import urljoin
-import requests
 from bs4 import BeautifulSoup
 
 def convert_date(date_str):
