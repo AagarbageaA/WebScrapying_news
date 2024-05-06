@@ -35,7 +35,7 @@ if __name__ == "__main__":
         updated_data = pd.concat([existing_data, df], ignore_index=True,axis=0)
         
         # 根據時間和來源排序
-        updated_data.sort_values(by=['Resourse','Time'], inplace=True)
+        updated_data.sort_values(by=['Time'], inplace=True)
 
         #寫入excel
         updated_data.to_excel("news_data.xlsx", index=False)
