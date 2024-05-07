@@ -46,7 +46,8 @@ for title in existing_data['Title']:
 
 # 創建TF-IDF向量化器
 vectorizer = TfidfVectorizer()
-
+words_df = pd.DataFrame(words)
+words_df.to_excel("cut_words.xlsx", index=False)
 # 計算TFIDF陣列
 tfidf_matrix = vectorizer.fit_transform(words)
 print(tfidf_matrix)
