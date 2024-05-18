@@ -4,17 +4,17 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # 讀切好的文章
-existing_data = pd.read_excel("word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')
+existing_data = pd.read_excel("repo/word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')
 docs = existing_data[0].tolist()
 
 # 向量化
 vectorizer_model = TfidfVectorizer(
     input=docs,
     encoding="UTF-8",
-    min_df=0.1,
-    tokenizer=lambda text: text.split(), max_features=3000
+    min_df=0.1, # 用於過濾掉在少於此閾值的文檔中出現的詞彙
+    tokenizer=lambda text: text.split(),
+    max_features=3000
     )
-tfidf_matrix = vectorizer_model.fit_transform(docs)
 
 topic_model = BERTopic(language="chinese (traditional)",
                        embedding_model="paraphrase-multilingual-MiniLM-L12-v2",
@@ -25,4 +25,4 @@ topic_model = BERTopic(language="chinese (traditional)",
                        )
 topics, probs = topic_model.fit_transform(docs)
 topic_list = pd.DataFrame(topic_model.get_topic_info())
-topic_list.to_excel("topic_list.xlsx", index=False)
+topic_list.to_excel("repo/topic_list.xlsx", index=False)

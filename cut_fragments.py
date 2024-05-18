@@ -81,7 +81,7 @@ jieba.load_userdict({
     "連江": 3000
 })
 
-existing_data = pd.read_excel("news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
+existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
 
 words = []
 num_rows = existing_data.shape[0]
@@ -103,9 +103,9 @@ print(f"similarity:\n{similarity}")
 # 將相似度矩陣轉換為 DataFrame
 similarity_df = pd.DataFrame(similarity)
 
-# 將 DataFrame 寫入 Excel 檔案
-similarity_df.to_excel("similarity_matrix.xlsx", index=False)
+# 寫入 similarity_matrix
+similarity_df.to_excel("repo/similarity_matrix.xlsx", index=False)
 
-# Optional: save the words for debugging purposes
+# 寫入 切好的片段
 words_df = pd.DataFrame(words)
-words_df.to_excel("word_fragments.xlsx", index=False)
+words_df.to_excel("repo/word_fragments.xlsx", index=False)
