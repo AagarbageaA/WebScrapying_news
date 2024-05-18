@@ -10,7 +10,7 @@ import pandas as pd
 
 if __name__ == "__main__":
 
-    with open("record.txt","r") as record: #讀取上次更新的日期
+    with open("repo/record.txt","r") as record: #讀取上次更新的日期
         last_time=record.read()
     BOUNDARY = int(last_time)
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         df = df.apply(lambda x: x if not isinstance(x, str) else x.encode('utf-8').decode('utf-8'))
         
         #讀現有的資料
-        existing_data = pd.read_excel("news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
+        existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
         
         #要新增的資料
         updated_data = pd.concat([existing_data, df], ignore_index=True,axis=0)
@@ -38,10 +38,10 @@ if __name__ == "__main__":
         updated_data.sort_values(by=['Time'], inplace=True)
 
         #寫入excel
-        updated_data.to_excel("news_data.xlsx", index=False)
+        updated_data.to_excel("repo/news_data.xlsx", index=False)
 
         #更新日期
-        with open("record.txt", "w") as record: 
+        with open("repo/record.txt", "w") as record: 
             current_date = datetime.now() # 更新成現在
             formatted_date = current_date.strftime("%Y%m%d")
             record.write(formatted_date)

@@ -71,6 +71,8 @@ def get_news(boundary):
     news_data = []
     for title, link, category, time in news_links:
         sleep(0.2)
+        if "vip" in link:
+            continue
         content, keywords = get_news_content(link)
         news_data.append({
             "Title": title,
