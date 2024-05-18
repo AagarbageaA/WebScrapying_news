@@ -11,8 +11,9 @@ docs = existing_data[0].tolist()
 vectorizer_model = TfidfVectorizer(
     input=docs,
     encoding="UTF-8",
-    min_df=0.1,
-    tokenizer=lambda text: text.split(), max_features=3000
+    min_df=0.1, # 用於過濾掉在少於此閾值的文檔中出現的詞彙
+    tokenizer=lambda text: text.split(),
+    max_features=3000
     )
 
 topic_model = BERTopic(language="chinese (traditional)",
