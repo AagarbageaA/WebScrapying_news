@@ -62,7 +62,7 @@ def fetch_content(url):
 
         # title
         try:
-            title = soup.find("h1", class_="normal__Title-sc-feea3c7c-0 dreoUD").text.strip()
+            title = soup.find("h1", class_="normal__Title-sc-e4573a7c-0 fhfcrp").text.strip()
         except:
             return
         # content
@@ -75,10 +75,14 @@ def fetch_content(url):
         for i, tag in enumerate(tags):
             tags[i] = tag.text.strip()
         # time
-        date = soup.find("div", class_="normal__Date-sc-feea3c7c-5 lCa-Da").text.strip()
+        date = soup.find("div", class_="normal__Date-sc-e4573a7c-5 OKUWY").text.strip()
         date_temp = date.split(" ")[0].split(".")
         date = f"{date_temp[0]}/{date_temp[1]}/{date_temp[2]}"
 
+        # print(title)
+        # print(content)
+        # print(tags)
+        # print(date)
 
         return {"Title": title, 
                 "Content": content, 
@@ -95,7 +99,7 @@ def get_news(boundary):
     # fetch all the article link in the serach page
     url = "https://www.mirrormedia.mg/tag/597ec945e531830d00e334e9"
     link_list = fetch_links(url, boundary)
-    print(link_list)
+    # print(link_list)
 
     news_data = []
     for link in link_list:
