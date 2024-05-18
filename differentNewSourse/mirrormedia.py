@@ -27,13 +27,13 @@ def fetch_links(url, boundary):
             last_height = new_height
 
             soup = BeautifulSoup(driver.page_source, 'html.parser')
-            last_news_year = soup.find("main", class_="slug-__TagContainer-sc-6af2655a-0 hzPAes").find_all("a")[-1]["href"][7:11]
+
+            last_news_year = soup.find("main", class_="slug-__TagContainer-sc-140ded25-0 fwwkvD").find_all("a")[-1]["href"][7:11]
             if int(last_news_year) < 2022: break
         
         # fetch the link
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
         link_list = []
-        links_list = soup.find("main", class_="slug-__TagContainer-sc-6af2655a-0 hzPAes").find_all("div", class_="article-list__ItemContainer-sc-4a6f6218-0 dZwMjE")
+        links_list = soup.find("main", class_="slug-__TagContainer-sc-140ded25-0 fwwkvD").find_all("div", class_="article-list__ItemContainer-sc-75e83cda-0 eotvdK")
         
         for links in links_list: 
             links_ = links.findAll("a", recursive=True)
@@ -95,6 +95,7 @@ def get_news(boundary):
     # fetch all the article link in the serach page
     url = "https://www.mirrormedia.mg/tag/597ec945e531830d00e334e9"
     link_list = fetch_links(url, boundary)
+    print(link_list)
 
     news_data = []
     for link in link_list:
