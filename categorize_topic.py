@@ -12,7 +12,6 @@ def categorize(words,stopwords): #利用模型進行主題分類
     # https://hackmd.io/jn1ggwrfRoak4b1uCfgUDw 自訂model簡介&參數
     # 向量化模型參數設定
     vectorizer_model = CountVectorizer(
-    vectorizer_model = CountVectorizer(
         encoding="UTF-8",
         min_df=0.05, # 用於過濾掉在少於此閾值(%)的文檔中出現的詞彙
         max_df=0.8,
