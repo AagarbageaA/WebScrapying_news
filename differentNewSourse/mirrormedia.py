@@ -11,13 +11,19 @@ def later_than(current, boundary):
     return False
 
 def fetch_links(url, boundary):
-    driver = webdriver.Chrome() 
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--ignore-certificate-errors')
+    prefs = {"profile.default_content_setting_values.notifications" : 2} 
+    chrome_options.add_experimental_option("prefs", prefs)
+
+    driver = webdriver.Chrome(options=chrome_options) 
     driver.get(url)
     sleep(2)  # 等頁面載入完全
 
     # 模擬滾動 觸發動態載入 直到需要的年份都出現
     last_height = driver.execute_script("return document.body.scrollHeight")
     try:
+        soup = BeautifulSoup()
         while True:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             sleep(2)  # 等待
@@ -28,12 +34,12 @@ def fetch_links(url, boundary):
 
             soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-            last_news_year = soup.find("main", class_="slug-__TagContainer-sc-140ded25-0 fwwkvD").find_all("a")[-1]["href"][7:11]
+            last_news_year = soup.find("main", class_="slug-__TagContainer-sc-67bf4ffb-0 jHclnX").find_all("a")[-1]["href"][7:11]
             if int(last_news_year) < 2022: break
         
         # fetch the link
         link_list = []
-        links_list = soup.find("main", class_="slug-__TagContainer-sc-140ded25-0 fwwkvD").find_all("div", class_="article-list__ItemContainer-sc-75e83cda-0 eotvdK")
+        links_list = soup.find("main", class_="slug-__TagContainer-sc-67bf4ffb-0 jHclnX").find_all("div", class_="article-list__ItemContainer-sc-75e83cda-0 eotvdK")
         
         for links in links_list: 
             links_ = links.findAll("a", recursive=True)
@@ -44,7 +50,7 @@ def fetch_links(url, boundary):
         return link_list
     
     except Exception as e:
-        print(f"{e} while fetching links")
+        print(f"{e} while fetching links in mirrorMedia")
         return
         
 
@@ -104,6 +110,7 @@ def get_news(boundary):
     news_data = []
     for link in link_list:
         data = fetch_content(link)
+        print(data)
         if data == None: continue
         news_data.append(data)
         sleep(1)

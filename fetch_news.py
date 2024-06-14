@@ -7,9 +7,9 @@ import differentNewSourse.mirrormedia as mirror
 import differentNewSourse.pts as pts
 import differentNewSourse.ttv as ttv
 import pandas as pd
+import jieba
 
-if __name__ == "__main__":
-
+def fetch():
     with open("repo/record.txt","r") as record: #讀取上次更新的日期
         last_time=record.read()
     BOUNDARY = int(last_time)
@@ -48,3 +48,51 @@ if __name__ == "__main__":
 
     except Exception as e:
         print("錯誤:", e)
+
+    return updated_data
+
+def preprocess_text(text):
+    text = text.replace('，', ' ').replace('。', ' ').replace('\n', ' ').replace('”', ' ')
+    text = text.replace('！', ' ').replace('？', ' ').replace('：', ' ').replace('；', ' ')
+    text = text.replace('、', ' ').replace('（', ' ').replace('）', ' ').replace('“', ' ')
+    text = text.replace('‘', ' ').replace('’', ' ').replace('《', ' ').replace('》', ' ')
+    #text = text.replace('/', ' ')
+    text = text.replace(',', ' ').replace('!', ' ').replace('?', ' ').replace(':', ' ')
+    text = text.replace(';', ' ').replace('-', ' ').replace('_', ' ').replace('~', ' ')
+    text = text.replace('"', ' ').replace("'", ' ').replace("「", ' ').replace("」", ' ')
+    text = text.replace("／ ", ' ').replace("〔 ", ' ').replace("〕 ", ' ')
+    return text
+
+def cut_and_save_content(articles,stopwords): #把文章用空格切割並分隔
+
+    #讀取userdict
+    jieba.load_userdict('repo/jieba_userdict.txt')
+
+    words = []
+
+    # 針對Content作文本切割
+    for content in articles:
+        processed_content = preprocess_text(content)
+        tokens = [word for word in jieba.lcut(processed_content, cut_all=False) if word not in stopwords]
+        words.append(" ".join(tokens))
+    
+    words_df = pd.DataFrame(words)
+    words_df.to_excel("repo/word_fragments.xlsx", index=False)
+    return words
+
+if __name__ == "__main__":
+    read_news=input("Fetch of not? Yes:1  No:0")
+    print(read_news)
+    if read_news==1:
+        news=fetch()
+    else:
+        news=pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
+    contents=news["Content"]
+
+    with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取stopword
+        stopwords=record.read()
+    cut_and_save_content(contents,stopwords)
+
+    
+
+    

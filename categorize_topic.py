@@ -2,33 +2,7 @@ import pandas as pd
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import TfidfVectorizer
 from bertopic.representation import KeyBERTInspired
-import jieba
-def preprocess_text(text):
-    text = text.replace('，', ' ').replace('。', ' ').replace('\n', ' ').replace('”', ' ')
-    text = text.replace('！', ' ').replace('？', ' ').replace('：', ' ').replace('；', ' ')
-    text = text.replace('、', ' ').replace('（', ' ').replace('）', ' ').replace('“', ' ')
-    text = text.replace('‘', ' ').replace('’', ' ').replace('《', ' ').replace('》', ' ')
-    #text = text.replace('/', ' ')
-    text = text.replace(',', ' ').replace('!', ' ').replace('?', ' ').replace(':', ' ')
-    text = text.replace(';', ' ').replace('-', ' ').replace('_', ' ').replace('~', ' ')
-    text = text.replace('"', ' ').replace("'", ' ').replace("「", ' ').replace("」", ' ')
-    text = text.replace("／ ", ' ').replace("〔 ", ' ').replace("〕 ", ' ')
-    return text
 
-def cut_content(articles): #把文章用空格切割並分隔
-
-    #讀取userdict
-    jieba.load_userdict('repo/jieba_userdict.txt')
-
-    words = []
-
-    # 針對Content作文本切割
-    for content in articles['Content']:
-        processed_content = preprocess_text(content)
-        tokens = [word for word in jieba.lcut(processed_content, cut_all=False) if word not in stopwords]
-        words.append(" ".join(tokens))
-    
-    return words
 
 def categorize(words,stopwords): #利用模型進行主題分類
 
@@ -58,9 +32,7 @@ def categorize(words,stopwords): #利用模型進行主題分類
     topic_list.to_excel("repo/topic_list.xlsx", index=False)
  
 if __name__ == "__main__":
-    #讀取新聞內容
-    contents = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
     with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取上次更新的日期
         stopwords=record.read()
-    words=cut_content(contents)
+    words = pd.read_excel("repo/word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')[0].tolist()
     categorize(words,stopwords)

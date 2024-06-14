@@ -70,6 +70,5 @@ def get_news(boundary):
             "Time": time,
             "Resourse": "ltn"
         })
+    #print(news_data)
     return news_data
-
-
