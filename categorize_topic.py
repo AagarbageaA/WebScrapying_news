@@ -15,10 +15,7 @@ def categorize(words,stopwords): #利用模型進行主題分類
         encoding="UTF-8",
         min_df=0.05, # 用於過濾掉在少於此閾值(%)的文檔中出現的詞彙
         max_df=0.8,
-        min_df=0.05, # 用於過濾掉在少於此閾值(%)的文檔中出現的詞彙
-        max_df=0.8,
         tokenizer=lambda text: text.split(),
-        max_features=5000, #取排序的前多少個詞
         max_features=5000, #取排序的前多少個詞
         stop_words=list(stopwords)
     ) 
@@ -69,5 +66,6 @@ if __name__ == "__main__":
     os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
     with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取上次更新的日期
         stopwords=record.read()
-    words = pd.read_excel("repo/word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')[0].tolist()
+    words = pd.read_excel("repo/artificial_word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')[0].tolist()
+    #words = pd.read_excel("repo/word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')[0].tolist()
     categorize(words,stopwords)
