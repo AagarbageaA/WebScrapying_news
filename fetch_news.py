@@ -77,7 +77,7 @@ def cut_and_save_content(articles,stopwords): #把文章用空格切割並分隔
         words.append(" ".join(tokens))
     
     words_df = pd.DataFrame(words)
-    words_df.to_excel("repo/artificial_word_fragments.xlsx", index=False)
+    words_df.to_excel("repo/word_fragments.xlsx", index=False)
     return words
 
 if __name__ == "__main__":
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     if read_news==1:
         news=fetch()
     else:
-        news=pd.read_excel("repo/artificial_news.xlsx", engine='openpyxl', sheet_name='Sheet1')
+        news=pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
     contents=news["Content"]
 
     with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取stopword
