@@ -12,10 +12,14 @@ def categorize(words,stopwords): #利用模型進行主題分類
     # https://hackmd.io/jn1ggwrfRoak4b1uCfgUDw 自訂model簡介&參數
     # 向量化模型參數設定
     vectorizer_model = CountVectorizer(
+    vectorizer_model = CountVectorizer(
         encoding="UTF-8",
         min_df=0.05, # 用於過濾掉在少於此閾值(%)的文檔中出現的詞彙
         max_df=0.8,
+        min_df=0.05, # 用於過濾掉在少於此閾值(%)的文檔中出現的詞彙
+        max_df=0.8,
         tokenizer=lambda text: text.split(),
+        max_features=5000, #取排序的前多少個詞
         max_features=5000, #取排序的前多少個詞
         stop_words=list(stopwords)
     ) 
@@ -23,6 +27,23 @@ def categorize(words,stopwords): #利用模型進行主題分類
     representation_model = KeyBERTInspired(
         random_state=0
     )
+
+    umap_model = UMAP(
+        n_neighbors=15,
+        n_components=5,
+        min_dist=0.0,
+        metric='cosine',
+        low_memory=False,
+        random_state=1337
+    )
+
+    ctfidf_model = ClassTfidfTransformer(
+        bm25_weighting = False, #default: False
+        reduce_frequent_words = False, #default: False
+        seed_words=county, #default: None
+        seed_multiplier=10 #default: 2
+    ) # https://maartengr.github.io/BERTopic/getting_started/ctfidf/ctfidf.html
+
 
     umap_model = UMAP(
         n_neighbors=15,
