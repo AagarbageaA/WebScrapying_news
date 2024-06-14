@@ -43,23 +43,6 @@ def categorize(words,stopwords): #利用模型進行主題分類
         seed_multiplier=10 #default: 2
     ) # https://maartengr.github.io/BERTopic/getting_started/ctfidf/ctfidf.html
 
-
-    umap_model = UMAP(
-        n_neighbors=15,
-        n_components=5,
-        min_dist=0.0,
-        metric='cosine',
-        low_memory=False,
-        random_state=1337
-    )
-
-    ctfidf_model = ClassTfidfTransformer(
-        bm25_weighting = False, #default: False
-        reduce_frequent_words = False, #default: False
-        seed_words=county, #default: None
-        seed_multiplier=10 #default: 2
-    ) # https://maartengr.github.io/BERTopic/getting_started/ctfidf/ctfidf.html
-
     # BERTopic參數設定
     topic_model = BERTopic(
         language="chinese (traditional)",
