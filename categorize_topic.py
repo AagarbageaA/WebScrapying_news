@@ -33,7 +33,7 @@ def categorize(words,stopwords,random1,random2,random3,m): #利用模型進行�
     umap_model = UMAP(
         n_neighbors=14,
         n_components=5,
-        min_dist=0,
+        min_dist=0.025,
         metric='minkowski',
         low_memory=True,
         random_state=42
@@ -58,24 +58,24 @@ def categorize(words,stopwords,random1,random2,random3,m): #利用模型進行�
         # # nr_topics=15,
         # hdbscan_model=clustering_model,
         min_topic_size=2, # 主題最小文檔數
-        # zeroshot_min_similarity=0.2, # 最小相似度
+        #zeroshot_min_similarity=0.05, # 最小相似度
     )
 
     topics, probs = topic_model.fit_transform(words)
     # topic_model.visualize_topics().show()
     topic_list = pd.DataFrame(topic_model.get_topic_info())
-    #topic_list.to_excel("repo/topic_list.xlsx", index=False)
+    topic_list.to_excel("repo/topic_list.xlsx", index=False)
     #print(f'topic{topics}')
     df = pd.DataFrame({"topic": topics, "docs": words})
-    # df.to_excel("repo/article_topic.xlsx", index=False)
+    df.to_excel("repo/article_topic.xlsx", index=False)
     return df,topic_list["Topic"].max()
 
 def grade(news):
-    predicted=[0]*2+[1]*3+[2]*3+[3]*2+[4]*19+[5]*2+[6]*5+[7]*4+[8]*2+[9]*2+[10]*3+[11]*7+[12]*8+[13]*5+[14]*2
+    predicted=[0]*3+[1]*2+[2]*19+[3]*2+[4]*5+[5]*2+[6]*2+[7]*3+[8]*7+[9]*8+[10]*5+[11]*2+[12]*2+[13]*2+[14]*2+[15]*11+[16]*2+[17]*2+[18]*6+[19]*2+[20]*17
 
     grade=0
     numlist=[]
-    for j in range(69):
+    for j in range(106):
         if (num:=news["topic"][j]) != -1:
             numlist.append(num)
         else:
@@ -86,7 +86,7 @@ def grade(news):
 
 if __name__ == "__main__":
     os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-    with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取上次更新的日期
+    with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取不要被辨識的詞
         stopwords=record.read()
     words = pd.read_excel("repo/artificial_word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')[0].tolist()
     #words = pd.read_excel("repo/word_fragments.xlsx", engine='openpyxl', sheet_name='Sheet1')[0].tolist()
