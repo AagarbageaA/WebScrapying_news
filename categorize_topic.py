@@ -64,10 +64,10 @@ def categorize(words,stopwords,random1,random2,random3,m): #利用模型進行�
     topics, probs = topic_model.fit_transform(words)
     # topic_model.visualize_topics().show()
     topic_list = pd.DataFrame(topic_model.get_topic_info())
-    #topic_list.to_excel("repo/topic_list.xlsx", index=False)
+    topic_list.to_excel("repo/topic_list.xlsx", index=False)
     #print(f'topic{topics}')
     df = pd.DataFrame({"topic": topics, "docs": words})
-    # df.to_excel("repo/article_topic.xlsx", index=False)
+    df.to_excel("repo/article_topic.xlsx", index=False)
     return df,topic_list["Topic"].max()
 
 def grade(news):
