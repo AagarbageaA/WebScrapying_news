@@ -62,8 +62,8 @@ def preprocess_text(text):
 jieba.load_userdict('repo/jieba_userdict.txt')
 
 #讀取新聞內容
-existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
-
+#existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
+existing_data = pd.read_excel("repo/artificial_news.xlsx", engine='openpyxl', sheet_name='Sheet1')
 words = []
 num_rows = existing_data.shape[0]
 
@@ -85,8 +85,9 @@ print(f"similarity:\n{similarity}")
 similarity_df = pd.DataFrame(similarity)
 
 # 寫入 similarity_matrix
-similarity_df.to_excel("repo/similarity_matrix.xlsx", index=False)
+#similarity_df.to_excel("repo/similarity_matrix.xlsx", index=False)
 
 # 寫入 切好的片段
 words_df = pd.DataFrame(words)
-words_df.to_excel("repo/word_fragments.xlsx", index=False)
+#words_df.to_excel("repo/word_fragments.xlsx", index=False)
+words_df.to_excel("repo/artificial_word_fragments.xlsx", index=False)
