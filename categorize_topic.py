@@ -94,21 +94,19 @@ if __name__ == "__main__":
     # neighbor=[11,11,10,9,8,8,8,8,6,6]
     # component=[12,3,12,14,9,11,13,14,11,5]
     dist=[0,0.05,0.1,0.15,0.2]
-    metric=["minkowski","euclidean","manhattan"]
     gradeList = pd.DataFrame(columns=["neighbor", "component", "Min_dist", "Grade","Metric"])
-    for m in metric:
-        for k in dist:
-            for i in range(13, 19):
-                for j in range(10, 15):
-                    print(f"neighbor={i}, component={j}, Min_dist={k}:")
-                    try:
-                        news, topic_num = categorize(words, stopwords, i, j, k,m)
-                        score = grade(news)
-                        new_row = pd.DataFrame({"neighbor": [i], "component": [j], "Min_dist": [k], "Grade": [score], "Metric":[m]})
-                        gradeList = pd.concat([gradeList, new_row], ignore_index=True)
-                        # print(gradeList)
-                    except Exception as e:
-                        print("錯誤:", e)
+    for k in dist:
+        for i in range(13, 19):
+            for j in range(10, 15):
+                print(f"neighbor={i}, component={j}, Min_dist={k}:")
+                try:
+                    news, topic_num = categorize(words, stopwords, i, j, k)
+                    score = grade(news)
+                    new_row = pd.DataFrame({"neighbor": [i], "component": [j], "Min_dist": [k], "Grade": [score]})
+                    gradeList = pd.concat([gradeList, new_row], ignore_index=True)
+                    # print(gradeList)
+                except Exception as e:
+                    print("錯誤:", e)
     gradeList.to_excel("repo/test_grade.xlsx", index=False)
 
 
