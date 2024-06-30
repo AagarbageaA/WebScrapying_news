@@ -7,33 +7,55 @@ import jieba
 import re
 
 def preprocess_text(text):
-    text = text.replace('，', ' ')
-    text = text.replace('。', ' ')
-    text = text.replace('\n', ' ')
-    text = text.replace('！', ' ')
-    text = text.replace('？', ' ')
-    text = text.replace('：', ' ')
-    text = text.replace('；', ' ')
-    text = text.replace('、', ' ')
-    text = text.replace('（', ' ')
-    text = text.replace('）', ' ')
-    text = text.replace('“', ' ')
-    text = text.replace('”', ' ')
-    text = text.replace('‘', ' ')
-    text = text.replace('’', ' ')
-    text = text.replace('《', ' ')
-    text = text.replace('》', ' ')
+    with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取上次更新的日期
+        stopwords=record.read()
+        for word in stopwords:
+            text = text.replace(word, '')
+    text = text.replace('，', '')
+    text = text.replace('。', '')
+    text = text.replace('\n', '')
+    text = text.replace('！', '')
+    text = text.replace('？', '')
+    text = text.replace('：', '')
+    text = text.replace('；', '')
+    text = text.replace('、', '')
+    text = text.replace('（', '')
+    text = text.replace('）', '')
+    text = text.replace('“', '')
+    text = text.replace('”', '')
+    text = text.replace('‘', '')
+    text = text.replace('’', '')
+    text = text.replace('《', '')
+    text = text.replace('》', '')
     #text = text.replace('.', ' ')
-    text = text.replace(',', ' ')
-    text = text.replace('!', ' ')
-    text = text.replace('?', ' ')
-    text = text.replace(':', ' ')
-    text = text.replace(';', ' ')
-    text = text.replace('-', ' ')
-    text = text.replace('_', ' ')
-    text = text.replace('~', ' ')
-    text = text.replace('"', ' ')
-    text = text.replace("'", ' ')
+    text = text.replace(',', '')
+    text = text.replace('!', '')
+    text = text.replace('?', '')
+    text = text.replace(':', '')
+    text = text.replace(';', '')
+    text = text.replace('-', '')
+    text = text.replace('_', '')
+    text = text.replace('~', '')
+    text = text.replace('"', '')
+    text = text.replace("'", '')
+    text = text.replace("[ 周刊 王 CTWANT ]", '')
+
+    flag1 = False
+    lst = list(text)
+    for i, item in enumerate(lst):
+        if item == "〔" or item == "[":
+            flag1 = True
+            continue
+        elif item == "〕" or item == "]":
+            flag1 = False
+            lst[i] = ''
+            continue
+        if flag1:
+            lst[i] = ''
+    else:
+        text = ''.join(lst)
+        
+        
     return text
 
 #讀取userdict
