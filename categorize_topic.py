@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from umap import UMAP
 from sklearn.metrics import adjusted_rand_score
 
-def categorize(words,stopwords,random1,random2,random3,m): #利用模型進行主題分類
+def categorize(words,stopwords,random1,random2,random3): #利用模型進行主題分類
 
     county = ['新竹', '台北', '高雄']
     # https://hackmd.io/jn1ggwrfRoak4b1uCfgUDw 自訂model簡介&參數
@@ -31,9 +31,9 @@ def categorize(words,stopwords,random1,random2,random3,m): #利用模型進行�
     ) # https://maartengr.github.io/BERTopic/getting_started/ctfidf/ctfidf.html
     
     umap_model = UMAP(
-        n_neighbors=14,
-        n_components=5,
-        min_dist=0.025,
+        n_neighbors=random1,
+        n_components=random2,
+        min_dist=random3,
         metric='minkowski',
         low_memory=True,
         random_state=42
@@ -71,15 +71,11 @@ def categorize(words,stopwords,random1,random2,random3,m): #利用模型進行�
     return df,topic_list["Topic"].max()
 
 def grade(news):
-    predicted=[0]*3+[1]*2+[2]*19+[3]*2+[4]*5+[5]*2+[6]*2+[7]*3+[8]*7+[9]*8+[10]*5+[11]*2+[12]*2+[13]*2+[14]*2+[15]*11+[16]*2+[17]*2+[18]*6+[19]*2+[20]*17
-
+    predicted=[0]*3+[1]*2+[2]*19+[3]*2+[4]*5+[5]*2+[6]*2+[7]*3+[8]*7+[9]*8+[10]*5+[11]*2+[12]*2+[13]*5+[14]*11+[15]*2+[16]*9+[17]*2+[18]*2+[19]*6+[20]*2+[21]*4+[22]*5+[23]*2+[24]*2+[25]*3+[26]*4
     grade=0
     numlist=[]
-    for j in range(106):
-        if (num:=news["topic"][j]) != -1:
-            numlist.append(num)
-        else:
-            numlist.append(j-100)
+    for j in range(121):
+        numlist.append(news["topic"][j])
     grade = adjusted_rand_score(numlist, predicted)
     print(grade)
     return grade
@@ -93,11 +89,11 @@ if __name__ == "__main__":
     # UmapRam=[2,65,103,121,127]
     # neighbor=[11,11,10,9,8,8,8,8,6,6]
     # component=[12,3,12,14,9,11,13,14,11,5]
-    dist=[0,0.05,0.1,0.15,0.2]
+    dist=[0, 0.005, 0.01, 0.015, 0.02, 0.25, 0.03, 0.035, 0.04, 0.045, 0.05]
     gradeList = pd.DataFrame(columns=["neighbor", "component", "Min_dist", "Grade","Metric"])
     for k in dist:
-        for i in range(13, 19):
-            for j in range(10, 15):
+        for i in range(12, 16):
+            for j in range(3, 11):
                 print(f"neighbor={i}, component={j}, Min_dist={k}:")
                 try:
                     news, topic_num = categorize(words, stopwords, i, j, k)
