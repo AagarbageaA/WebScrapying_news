@@ -45,6 +45,7 @@ def preprocess_text(text):
     for i, item in enumerate(lst):
         if item == "〔" or item == "[":
             flag1 = True
+            lst[i] = ''
             continue
         elif item == "〕" or item == "]":
             flag1 = False
@@ -85,9 +86,9 @@ print(f"similarity:\n{similarity}")
 similarity_df = pd.DataFrame(similarity)
 
 # 寫入 similarity_matrix
-#similarity_df.to_excel("repo/similarity_matrix.xlsx", index=False)
+#similarity_df.to_excel("production/similarity_matrix.xlsx", index=False)
 
 # 寫入 切好的片段
 words_df = pd.DataFrame(words)
-#words_df.to_excel("repo/word_fragments.xlsx", index=False)
-words_df.to_excel("repo/artificial_word_fragments.xlsx", index=False)
+#words_df.to_excel("production/word_fragments.xlsx", index=False)
+words_df.to_excel("production/artificial_word_fragments.xlsx", index=False)
