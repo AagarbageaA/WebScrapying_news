@@ -29,9 +29,9 @@ def categorize(words,seedTopicList,random1,random2,random3): #利用模型進行
     ) # https://maartengr.github.io/BERTopic/getting_started/ctfidf/ctfidf.html
     
     umap_model = UMAP(
-        n_neighbors=12,
-        n_components=9,
-        min_dist=0.05,
+        n_neighbors=14,
+        n_components=5,
+        min_dist=0.045,
         metric='minkowski',
         low_memory=True,
         random_state=42
@@ -73,7 +73,7 @@ def grade(news):
     predicted=[0]*3+[1]*2+[2]*19+[3]*2+[4]*5+[5]*2+[6]*2+[7]*3+[8]*7+[9]*8+[10]*5+[11]*2+[12]*2+[13]*5+[14]*11+[15]*2+[16]*9+[17]*2+[18]*2+[19]*6+[20]*2+[21]*4+[22]*5+[23]*2+[24]*2+[25]*3+[26]*4
     grade=0
     numlist=[]
-    for j in range(121):
+    for j in range(len(predicted)):
         numlist.append(news["topic"][j])
     grade = adjusted_rand_score(numlist, predicted)
     print(grade)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     gradeList = pd.DataFrame(columns=["neighbor", "component", "Min_dist", "Grade","Metric"])
     for k in dist:
         for i in range(12, 16):
-            for j in range(3, 11):
+            for j in range(5,10):
                 print(f"neighbor={i}, component={j}, Min_dist={k}:")
                 try:
                     news, topic_num = categorize(words, seedTopicList, i, j, k)
