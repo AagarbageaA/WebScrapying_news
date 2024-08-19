@@ -1,11 +1,12 @@
 
 from datetime import datetime
-import differentNewSourse.udn as udn
-import differentNewSourse.ltn as ltn
+import searchNews.udn as udn
+import searchNews.ltn as ltn
+import searchNews.pts as pts
+import searchNews.ttv as ttv
+
 import differentNewSourse.yahoo as yahoo
 import differentNewSourse.mirrormedia as mirror
-import differentNewSourse.pts as pts
-import differentNewSourse.ttv as ttv
 import pandas as pd
 import jieba
 
@@ -14,25 +15,27 @@ def fetch():
         last_time=record.read()
     BOUNDARY = int(last_time)
 
-    df = pd.DataFrame(columns=["Title", "Category", "Content", "Keywords","Time","Resourse"])
+    df = pd.DataFrame(columns=["Title", "Content", "Link", "Time", "Resourse"])
     
     # 把每個網站爬到的資料存進df
-    df = pd.concat([df, pd.DataFrame(ltn.get_news(BOUNDARY), columns=["Title", "Category", "Content","Time","Resourse"])], ignore_index=True)
-    df = pd.concat([df, pd.DataFrame(udn.get_news(BOUNDARY), columns=["Title",  "Category", "Content", "Keywords","Time","Resourse"])], ignore_index=True)
-    df = pd.concat([df, pd.DataFrame(yahoo.get_news(BOUNDARY), columns=["Title",  "Content","Time","Resourse"])], ignore_index=True)
-    df = pd.concat([df, pd.DataFrame(mirror.get_news(BOUNDARY), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
-    df = pd.concat([df, pd.DataFrame(pts.get_news(BOUNDARY), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
-    df = pd.concat([df, pd.DataFrame(ttv.get_news(BOUNDARY), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
+    # df = pd.concat([df, pd.DataFrame(ltn.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(udn.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(pts.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(ttv.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
+    
+    # df = pd.concat([df, pd.DataFrame(yahoo.get_news(BOUNDARY), columns=["Title",  "Content","Time","Resourse"])], ignore_index=True)
+    # df = pd.concat([df, pd.DataFrame(mirror.get_news(BOUNDARY), columns=["Title",  "Content", "Keywords","Time","Resourse"])], ignore_index=True)
     
     # 存成excel，成功的話才更新時間
     try:
         df = df.apply(lambda x: x if not isinstance(x, str) else x.encode('utf-8').decode('utf-8'))
         
         #讀現有的資料
-        existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
-        
-        #要新增的資料
-        updated_data = pd.concat([existing_data, df], ignore_index=True,axis=0)
+        try:
+            existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
+            updated_data = pd.concat([existing_data, df], ignore_index=True,axis=0)
+        except:
+            updated_data = df
         
         # 根據時間和來源排序
         updated_data.sort_values(by=['Time'], inplace=True)
@@ -83,17 +86,17 @@ def cut_and_save_content(articles,stopwords): #把文章用空格切割並分隔
 
 if __name__ == "__main__":
     read_news=input("Fetch of not? Yes:1  No:0")
-    print(read_news)
-    if read_news==1:
+    if read_news == "1":
         news=fetch()
     else:
         news=pd.read_excel("repo/artificial_news.xlsx", engine='openpyxl', sheet_name='Sheet1')
         #news=pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
-    contents=news["Content"]
 
-    with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取stopword
-        stopwords=record.read()
-    cut_and_save_content(contents,stopwords)
+    # contents=news["Content"]
+
+    # with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取stopword
+    #     stopwords=record.read()
+    # cut_and_save_content(contents,stopwords)
 
     
 
