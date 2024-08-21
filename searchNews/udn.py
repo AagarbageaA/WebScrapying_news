@@ -70,11 +70,11 @@ def get_news(boundary):
             news_data.append({
                 "Title": title,
                 "Content": content,
-                "link": link,
+                "Link": link,
                 'Time': time,
                 "Resourse": "udn"
             })
     return news_data
 
 if __name__ == "__main__":
-    get_news(20240101)
+    get_news(20220101)

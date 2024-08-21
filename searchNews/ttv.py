@@ -71,7 +71,7 @@ def fetch_content(url):
 
         return {"Title": title, 
                 "Content": content, 
-                "Keywords": tags, 
+                "Link": url, 
                 "Time": date, 
                 "Resourse":"ttv"}
     
