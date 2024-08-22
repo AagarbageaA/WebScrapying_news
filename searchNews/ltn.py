@@ -1,5 +1,7 @@
-from time import sleep
 import requests
+import ftfy
+
+from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,17 +12,17 @@ def get_news_links(url, boundary):
 
     driver = webdriver.Chrome(options=options) 
     driver.get(url)
-    sleep(3)  # 等頁面載入完全
+    sleep(2)  # 等頁面載入完全
 
     news_links = []
 
     # 模擬滾動 觸發動態載入 直到需要的年份都出現
     last_height = driver.execute_script("return document.body.scrollHeight")
     while True:
-        sleep(3)
+        sleep(2)
         while True:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            sleep(3)  # 等待
+            sleep(2)  # 等待
             new_height = driver.execute_script("return document.body.scrollHeight")
             if new_height == last_height:
                 break
@@ -85,12 +87,12 @@ def get_news(boundary):
     news_links = get_news_links(url,boundary)
     news_data = []
     for title, link in news_links:
-        sleep(0.2)
+        sleep(2)
         content, time = get_news_content(link, boundary)
         if content:
             news_data.append({
-                "Title": title,
-                "Content": content,
+                "Title": ftfy.fix_text(title),
+                "Content": ftfy.fix_text(content),
                 "Link": link,
                 "Time": time,
                 "Resourse": "ltn"

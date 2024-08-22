@@ -4,7 +4,6 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import jieba
-import re
 
 def preprocess_text(text):
     with open("repo/stop_words.txt","r",encoding="utf-8") as record: #讀取上次更新的日期

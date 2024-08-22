@@ -16,9 +16,9 @@ def fetch():
     BOUNDARY = int(last_time)
 
     df = pd.DataFrame(columns=["Title", "Content", "Link", "Time", "Resourse"])
-    
+
     # 把每個網站爬到的資料存進df
-    # df = pd.concat([df, pd.DataFrame(ltn.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(ltn.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
     df = pd.concat([df, pd.DataFrame(udn.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
     df = pd.concat([df, pd.DataFrame(pts.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
     df = pd.concat([df, pd.DataFrame(ttv.get_news(BOUNDARY), columns=["Title", "Content", "Link", "Time", "Resourse"])], ignore_index=True)
@@ -35,10 +35,11 @@ def fetch():
             existing_data = pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
             updated_data = pd.concat([existing_data, df], ignore_index=True,axis=0)
         except:
-            updated_data = df
+            updated_data = pd.DataFrame(columns=["Title", "Content", "Link", "Time", "Resourse"])
+            updated_data = pd.concat([updated_data, df], ignore_index=True,axis=0)
         
         # 根據時間和來源排序
-        updated_data.sort_values(by=['Time'], inplace=True)
+        # updated_data.sort_values(by=['Time'], inplace=True)
 
         #寫入excel
         updated_data.to_excel("repo/news_data.xlsx", index=False)
@@ -84,12 +85,13 @@ def cut_and_save_content(articles,stopwords): #把文章用空格切割並分隔
     words_df.to_excel("repo/artificial_word_fragments.xlsx", index=False)
     return words
 
+
 if __name__ == "__main__":
-    read_news=input("Fetch of not? Yes:1  No:0")
-    if read_news == "1":
-        news=fetch()
-    else:
-        news=pd.read_excel("repo/artificial_news.xlsx", engine='openpyxl', sheet_name='Sheet1')
+    # read_news=input("Fetch of not? Yes:1  No:0")
+    # if read_news == "1":
+    news=fetch()
+    # else:
+    #     news=pd.read_excel("repo/artificial_news.xlsx", engine='openpyxl', sheet_name='Sheet1')
         #news=pd.read_excel("repo/news_data.xlsx", engine='openpyxl', sheet_name='Sheet1')
 
     # contents=news["Content"]

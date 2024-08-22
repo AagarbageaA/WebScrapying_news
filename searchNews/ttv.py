@@ -1,4 +1,5 @@
 #ttv台視
+import ftfy
 import string
 
 import urllib.request as request
@@ -69,14 +70,15 @@ def fetch_content(url):
         date_temp = date.split(" ")[0].split(".")
         date = f"{date_temp[0]}/{date_temp[1]}/{date_temp[2]}"
 
-        return {"Title": title, 
-                "Content": content, 
+        return {"Title": ftfy.fix_text(title),
+                "Content": ftfy.fix_text(content),
                 "Link": url, 
                 "Time": date, 
                 "Resourse":"ttv"}
     
-    except Exception as e:
-        print(f"{e} while fetching content of {url}")
+    except:
+        with open(r"production\failed.txt", "a") as f:
+            f.write(url + "\n")
         return
 
 
@@ -84,14 +86,14 @@ def get_news(boundary):
     # fetch all the article link in the serach page
     url = "https://news.ttv.com.tw/search/" + parse.quote("地層下陷")
     link_list = fetch_links(url, boundary)
-
+    print(link_list)
     news_data = []
     for link in link_list:
-        print(f"fetching {url}")
+        print(f"fetching {link}")
         data = fetch_content(link)
         if data == None: continue
         news_data.append(data)
-        sleep(1)
+        sleep(2)
     return news_data
 
 if __name__ == "__main__":

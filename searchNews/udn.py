@@ -1,21 +1,23 @@
 # 聯合新聞網
 from time import sleep
+import ftfy
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import random
 
 def get_news_links(url,boundary): # 從搜尋頁面抓結果
     options = webdriver.ChromeOptions()
     options.add_argument('--disable-blink-features=AutomationControlled')
     driver = webdriver.Chrome(options=options) 
     driver.get(url)
-    sleep(3)  # 等頁面載入完全
+    sleep(2)  # 等頁面載入完全
 
     # 模擬滾動 觸發動態載入 直到需要的年份都出現
     last_height = driver.execute_script("return document.body.scrollHeight")
     while True:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight-4000);")
-        sleep(3)  # 等待捲動後加載
+        sleep(2)  # 等待捲動後加載
         new_height = driver.execute_script("return document.body.scrollHeight")
         if new_height == last_height:
             break
@@ -63,17 +65,21 @@ def get_news(boundary):
     news_links = get_news_links(url,boundary)
     news_data = []
     for title, link, time in news_links:
-        sleep(0.2)
+        sleep(2)
         if "https://udn.com/news/story/" in link:
             print(f"fetching {link}")
-            content = get_news_content(link)
-            news_data.append({
-                "Title": title,
-                "Content": content,
-                "Link": link,
-                'Time': time,
-                "Resourse": "udn"
-            })
+            try:
+                content = get_news_content(link)
+                news_data.append({
+                    "Title": ftfy.fix_text(title),
+                    "Content": ftfy.fix_text(content),
+                    "Link": link,
+                    'Time': time,
+                    "Resourse": "udn"
+                })
+            except:
+                with open(r"production\failed.txt", "a") as f:
+                    f.write(link + "\n")
     return news_data
 
 if __name__ == "__main__":
