@@ -1,5 +1,5 @@
 #公視
-
+import ftfy
 import urllib.request as request
 import urllib.parse as parse
 
@@ -83,14 +83,15 @@ def get_news_content(url):
         date = soup.find("span", class_="text-nowrap mr-2").find("time").text.strip()
         date = date_format_transform(date)
 
-        return {"Title": title, 
-                "Content": overview, 
+        return {"Title": ftfy.fix_text(title),
+                "Content": ftfy.fix_text(overview),
                 "Link": url,
                 "Time": date,
                 "Resourse":"pts"}
 
-    except Exception as e:
-        print(f"{e} while fetching content of {url}")
+    except:
+        with open(r"production\failed.txt", "a") as f:
+            f.write(url + "\n")
         return
 
 def get_news(boundary):
@@ -101,7 +102,9 @@ def get_news(boundary):
     for link in link_list:
         print(f"fetching {link}")
         content = get_news_content(link)
+        if content == None: continue
         news_data.append(content)
+        sleep(2)
     return news_data
     
 if __name__ == "__main__":
