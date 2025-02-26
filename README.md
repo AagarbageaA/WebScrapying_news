@@ -1,4 +1,4 @@
-# 專案維護說明
+
 ## 專案簡介
 以Flutter作為前端技術，搭配flask建立本地伺服器
 基礎模型為Meta 所開源且在規範下可商用的 Llama 3 模型，實際用來訓練的是Hugging Face上的[taide/Llama3-TAIDE-LX-8B-Chat-Alpha1](https://huggingface.co/taide/Llama3-TAIDE-LX-8B-Chat-Alpha1)
